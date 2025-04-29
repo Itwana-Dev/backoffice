@@ -1,0 +1,62 @@
+/* src/index.css - Estilos Globales Dark Mode */
+
+/* Definición de variables de color globales */
+:root {
+  --bg-color-page: #ffffff;         /* Fondo general muy oscuro */
+  --bg-color-container: #1a1a2e;  /* Fondo de contenedores oscuros */
+  --bg-color-input: rgba(255, 255, 255, 0.05); /* Fondo de inputs */
+  --border-color: rgba(255, 255, 255, 0.1); /* Borde sutil */
+  --border-color-focus: rgba(0, 232, 255, 0.5); /* Borde cian en focus (del gráfico) */
+
+  --text-color-primary: #000000;    /* Texto principal claro */
+  --text-color-secondary: #000000;  /* Texto secundario/placeholder */
+  --text-color-headings: #000000;   /* Texto de títulos */
+  --text-color-button: #000000;     /* Texto sobre botones primarios */
+  --text-color-link: #00e8ff;       /* Color de enlaces (cian) */
+  --text-color-link-hover: #ffffff;
+
+  --primary-accent-color: #e01e5a; /* Magenta para botones primarios */
+  --primary-accent-hover: #c71a50; /* Magenta más oscuro para hover */
+
+  --error-color: #ff4d6d;          /* Color para mensajes de error */
+
+  /* Fuentes */
+  --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilos base para toda la aplicación */
+body {
+  margin: 0; /* Quita márgenes por defecto */
+  padding: 0; /* Quita paddings por defecto */
+  font-family: var(--font-family-base);
+  background-color: var(--bg-color-page);
+  color: var(--text-color-primary);
+  line-height: 1.6; /* Espaciado de línea cómodo */
+  -webkit-font-smoothing: antialiased; /* Mejora renderizado de fuentes */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Estilos generales para links (opcional) */
+/* a {
+  color: var(--text-color-link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--text-color-link-hover);
+  text-decoration: underline;
+} */
+
+/* Estilos generales para botones (opcional, puedes definirlos más específicamente) */
+button {
+  cursor: pointer;
+  font-family: inherit; /* Hereda la fuente del body */
+  border-radius: 8px; /* Redondeo por defecto */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Puedes añadir aquí más resets o estilos base si lo necesitas */
+*, *::before, *::after {
+  box-sizing: border-box; /* Modelo de caja más intuitivo */
+}

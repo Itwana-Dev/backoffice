@@ -1,0 +1,43 @@
+/* src/pages/SitiosPage.css (Simplificado) */
+
+.page-container {
+    /* Estilos si necesitas padding extra, etc. */
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee; /* Borde claro para fondo blanco */
+}
+h2 
+.page-header h2 {
+    margin: 0;
+    color: #000000; /* Título oscuro */
+    font-weight: 600; /* Un poco más de peso */
+}
+
+/* Los estilos específicos de .sitios-table, th, td, etc., ya no son necesarios */
+/* Antsign se encarga de ellos. */ De
+
+
+/* --- ESTILOS TEMPORALES PARA EL MODAL PLACEHOLDER --- */
+/* (Mantenlos si aún usas el placeholder, o elimínalos cuando uses AntD Modal) */
+.modal-placeholder {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background-color: #ffffff; /* Fondo blanco para modal en tema claro */
+  padding: 30px;
+  border-radius: 8px; /* AntD usa menos redondeo por defecto */
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05); /* Sombra AntD */
+  z-index: 1050;
+  border: 1px solid #f0f0f0; /* Borde muy sutil AntD */
+  color: #333; /* Texto oscuro */
+}
+/* ... (otros estilos del placeholder si los necesitas) ... */

@@ -1,0 +1,49 @@
+/* src/App.css - Estilos para Layout Principal (Sidebar + Contenido) */
+
+/* Contenedor principal que organiza Sidebar y Contenido */
+.app-layout {
+  display: flex; /* Usa flexbox para poner sidebar y contenido lado a lado */
+}
+
+/* Estilos para el Sidebar (ya definidos en Sidebar.css, pero aseguramos el espacio) */
+/* No necesitamos estilos directos para .sidebar aquí si ya están en Sidebar.css */
+
+/* Área principal del contenido */
+.main-content {
+  flex-grow: 1;
+  /* Ajusta este margen para que coincida con el width en Sidebar.css */
+  margin-left: 260px; /* <-- CAMBIADO DE 250px a 260px */
+  padding: 30px 40px;
+  min-height: 100vh;
+  background-color: var(--bg-color-page);
+}
+
+/* Estilos generales para títulos dentro del contenido principal */
+.main-content h2 {
+    color: var(--text-color-headings);
+    margin-top: 0; /* Quita margen superior por defecto */
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.8rem;
+}
+
+/* Estilos generales para párrafos dentro del contenido principal */
+.main-content p {
+    color: var(--text-color-secondary);
+    line-height: 1.7;
+}
+
+/* --- ESTILOS ANTERIORES (Opcional: Mover o Eliminar) --- */
+/* Si tenías estilos específicos para .backoffice-container, h1, p, .logout-button
+   que ahora están dentro de .main-content o .sidebar, puedes eliminarlos de aquí
+   o adaptarlos si son necesarios para elementos específicos dentro de las páginas.
+   Los estilos generales para h2, p ya están definidos arriba.
+   El botón logout ahora está en Sidebar.css (.logout-button-sidebar) */
+
+/* Por ejemplo, si quieres mantener el estilo específico del H1 de App.jsx anterior: */
+/* .main-content h1 {
+  color: var(--text-color-headings);
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.8rem;
+} */

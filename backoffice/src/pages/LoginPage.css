@@ -1,0 +1,210 @@
+/* src/pages/LoginPage.css - Rediseño Dark Mode con Logo GRANDE y Margen Reducido */
+
+/* Estilos globales para la página */
+.login-page-dark {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #12121a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* Contenedor principal oscuro */
+.login-container-dark {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    min-height: 600px;
+    background-color: #1a1a2e;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Simulación del Gráfico de Fondo Abstracto (sin cambios) */
+.background-graphic {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 800px;
+    height: 800px;
+    transform: translate(-50%, -50%);
+    background-image: radial-gradient(circle at 60% 40%, rgba(0, 232, 255, 0.3) 0%, rgba(0, 232, 255, 0) 40%),
+                      radial-gradient(circle at 40% 60%, rgba(255, 0, 127, 0.35) 0%, rgba(255, 0, 127, 0) 45%),
+                      radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.25) 0%, rgba(138, 43, 226, 0) 50%);
+    filter: blur(80px);
+    opacity: 0.6;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Área del formulario (Izquierda) */
+.form-area {
+    flex: 1;
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 1;
+}
+
+/* Área de bienvenida (Derecha) */
+.welcome-area {
+    flex: 1;
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: #ffffff;
+    z-index: 1;
+}
+
+/* Estilo para el Logo (Tamaño Aumentado y Margen Inferior Reducido) */
+.login-logo {
+    display: block;
+    /* Tamaño aumentado */
+    max-width: 300px; /* <-- Mantenemos el tamaño grande */
+    height: auto;
+    /* Margen inferior reducido para que no empuje tanto hacia abajo */
+    margin-bottom: 0.8rem; /* <-- VALOR REDUCIDO (antes 2rem) */
+}
+
+
+.welcome-area h2 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    /* Puedes añadir un pequeño margen superior si el logo queda muy pegado */
+    /* margin-top: 0.5rem; */
+    line-height: 1.2;
+}
+
+.welcome-area p {
+    font-size: 1rem;
+    color: #adb5bd;
+    max-width: 350px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* Estilos para inputs dark mode (sin cambios) */
+.input-group-dark {
+    margin-bottom: 1.8rem;
+    position: relative;
+}
+
+.input-group-dark input {
+    width: 100%;
+    padding: 18px 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.input-group-dark input::placeholder {
+    color: #adb5bd;
+}
+
+.input-group-dark input:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 232, 255, 0.5);
+}
+
+/* Opciones debajo del formulario (sin cambios) */
+.form-options-dark {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.8rem;
+    font-size: 0.85rem;
+    color: #adb5bd;
+}
+.form-options-dark a {
+    color: #adb5bd;
+    text-decoration: none;
+}
+.form-options-dark a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* Botón de Login (Estilo Azul Intermedio - sin cambios) */
+.login-button-dark {
+    width: 100%;
+    padding: 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+}
+
+.login-button-dark:hover {
+    background-color: #0056b3;
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+}
+
+/* Mensaje de Error (sin cambios) */
+.error-message-dark {
+    color: #64b5f6;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Media Queries (Ajustes para pantallas pequeñas) */
+@media (max-width: 900px) {
+    .login-container-dark {
+        flex-direction: column;
+        max-width: 450px;
+        min-height: auto;
+        margin: 30px 15px;
+    }
+
+    .form-area, .welcome-area {
+        flex: none;
+        width: 100%;
+        padding: 40px;
+        text-align: center;
+        align-items: center;
+    }
+
+    /* Estilo para el Logo en Móvil (Tamaño Aumentado y Margen Reducido) */
+    .login-logo {
+        /* Tamaño móvil aumentado */
+        max-width: 200px; /* <-- Mantenemos tamaño grande móvil */
+        /* Margen inferior reducido también en móvil */
+        margin-bottom: 0.8rem; /* <-- VALOR REDUCIDO (antes 1.5rem) */
+    }
+
+    .welcome-area h2 {
+        font-size: 2.5rem;
+         /* Puedes añadir un pequeño margen superior si el logo queda muy pegado */
+         /* margin-top: 0.5rem; */
+    }
+    .welcome-area p {
+       max-width: 100%;
+    }
+
+    .background-graphic {
+       width: 600px;
+       height: 600px;
+       opacity: 0.4;
+    }
+}

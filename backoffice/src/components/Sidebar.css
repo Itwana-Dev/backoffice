@@ -1,0 +1,163 @@
+/* src/components/Sidebar.css (Rediseño Profesional y Minimalista) */
+
+/* Variables locales (puedes ajustar colores o usar los globales de :root si prefieres) */
+:root {
+    --sidebar-bg: #111827; /* Fondo más oscuro y moderno */
+    --sidebar-link-color: #9CA3AF; /* Gris claro para texto normal */
+    --sidebar-link-hover-bg: #1F2937; /* Fondo sutil al pasar el ratón */
+    --sidebar-link-active-color: #FFFFFF; /* Texto blanco para activo */
+    --sidebar-link-active-bg: #374151; /* Fondo más oscuro para activo */
+    --sidebar-icon-color: #6B7280; /* Color base de iconos */
+    --sidebar-icon-active-color: var(--sidebar-link-active-color); /* Icono activo blanco */
+    --sidebar-border-color: #374151; /* Color para bordes/separadores */
+    --sidebar-header-color: #F9FAFB; /* Color del título */
+    --sidebar-logout-hover-bg: #dc2626; /* Rojo para hover del logout */
+}
+
+.sidebar {
+    width: 260px; /* Un poco más ancho para los iconos */
+    height: 100vh;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-link-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Asegura que esté por encima */
+    transition: width 0.3s ease; /* Para futuras animaciones si se colapsa */
+    border-right: 1px solid var(--sidebar-border-color); /* Borde derecho sutil */
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--sidebar-border-color);
+    margin-bottom: 15px; /* Espacio antes de los links */
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: var(--sidebar-header-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-nav {
+    flex-grow: 1; /* Ocupa el espacio */
+    overflow-y: auto; /* Permite scroll si hay muchos items */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0 15px; /* Padding lateral para los items */
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 5px; /* Pequeño espacio entre items */
+}
+
+/* Estilos base para todos los enlaces de navegación */
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px; /* Padding interno */
+    color: var(--sidebar-link-color);
+    text-decoration: none;
+    font-size: 0.95rem; /* Ligeramente más pequeño */
+    font-weight: 500;
+    border-radius: 8px; /* Bordes redondeados */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+}
+
+/* Icono dentro del enlace */
+.nav-link .nav-icon {
+    display: inline-flex; /* Para alinear bien el icono SVG */
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px; /* Espacio entre icono y texto */
+    font-size: 1.2em; /* Tamaño del icono relativo al texto */
+    min-width: 20px; /* Ancho mínimo para alinear iconos */
+    color: var(--sidebar-icon-color); /* Color base del icono */
+    transition: color 0.2s ease;
+}
+
+/* Estilo al pasar el ratón por encima */
+.nav-link:hover {
+    background-color: var(--sidebar-link-hover-bg);
+    color: var(--sidebar-link-active-color); /* Texto blanco al hacer hover */
+}
+.nav-link:hover .nav-icon {
+    color: var(--sidebar-link-active-color); /* Icono blanco al hacer hover */
+}
+
+/* Estilo para el enlace activo */
+.nav-link.active-link {
+    background-color: var(--sidebar-link-active-bg);
+    color: var(--sidebar-link-active-color);
+    font-weight: 600; /* Un poco más de peso */
+}
+
+.nav-link.active-link .nav-icon {
+    color: var(--sidebar-icon-active-color);
+}
+
+/* Footer y botón de logout */
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid var(--sidebar-border-color);
+    margin-top: 15px; /* Espacio sobre el footer */
+}
+
+.logout-button {
+    /* Hereda estilos de .nav-link para consistencia */
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 15px;
+    background-color: transparent; /* Fondo transparente por defecto */
+    color: var(--sidebar-link-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.logout-button .nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.2em;
+    min-width: 20px;
+    color: var(--sidebar-icon-color);
+    transition: color 0.2s ease;
+}
+
+.logout-button:hover {
+    background-color: var(--sidebar-logout-hover-bg); /* Fondo rojo al pasar el ratón */
+    color: #FFFFFF; /* Texto blanco */
+}
+
+.logout-button:hover .nav-icon {
+    color: #FFFFFF; /* Icono blanco */
+}
+
+/* Scrollbar minimalista (Opcional) */
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: var(--sidebar-border-color);
+    border-radius: 10px;
+    border: 2px solid var(--sidebar-bg); /* Crea un efecto de padding */
+}
