@@ -1,30 +1,30 @@
-// src/pages/SitiosPage.jsx (Usando Ant Design Table)
+// src/pages/SitiosPage.jsx (Simplificado para usar AddEditSitioModal)
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase/firestore'; // Añade doc y deleteDoc
-import { db } from '../../firebase';
+import { collection, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { db } from '../../firebase'; // Ajusta la ruta si es necesario
 
-// Importa componentes de Ant Design
-import { Table, Button, Space, Tag, Popconfirm } from 'antd'; // Importa Table, Button, Space, Tag, Popconfirm
-import { BsPlusLg, BsPencilSquare, BsTrash } from 'react-icons/bs'; // Mantenemos iconos
+// Importa componentes de Ant Design (solo los necesarios para la página)
+import { Table, Button, Space, Tag, Popconfirm, message } from 'antd'; // Añade message
+import { BsPlusLg, BsPencilSquare, BsTrash } from 'react-icons/bs';
 
-// Importa el Modal (aún por implementar)
-// import AddSitioModal from '../components/AddSitioModal';
+// Importa el NUEVO componente Modal
+import AddEditSitioModal from './components/AddEditSitioModal'; // Ajusta la ruta si es necesario
 
-// Estilos específicos de la página (mantén los de .page-header, .add-button, etc.)
 import './SitiosPage.css';
 
 function SitiosPage() {
+    // Estados para la página principal
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingSitio, setEditingSitio] = useState(null);
+    const [editingSitio, setEditingSitio] = useState(null); // Solo para pasar al modal
     const [sitiosList, setSitiosList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // Error de carga/eliminación de la lista
 
     // --- Carga de Datos (sin cambios) ---
     useEffect(() => {
         setIsLoading(true);
         const sitesCollectionRef = collection(db, 'sites');
-        const q = query(sitesCollectionRef, orderBy('title')); // Ordenar por título
+        const q = query(sitesCollectionRef, orderBy('title'));
 
         const unsubscribe = onSnapshot(q,
             (querySnapshot) => {
@@ -32,7 +32,6 @@ function SitiosPage() {
                 setSitiosList(sitesData);
                 setIsLoading(false);
                 setError(null);
-                console.log("Sitios cargados/actualizados:", sitesData.length);
             },
             (err) => {
                 console.error("Error al obtener sitios:", err);
@@ -43,143 +42,101 @@ function SitiosPage() {
         return () => unsubscribe();
     }, []);
 
-    // --- Funciones Modal y Acciones ---
+    // --- Funciones para controlar el Modal ---
     const handleOpenAddModal = () => {
-        setEditingSitio(null);
+        setEditingSitio(null); // Limpia el sitio en edición
         setIsModalOpen(true);
-        console.log("Abriendo modal para AÑADIR sitio");
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setEditingSitio(null);
     };
 
     const handleEdit = (sitio) => {
-        setEditingSitio(sitio);
+        setEditingSitio(sitio); // Establece el sitio a editar
         setIsModalOpen(true);
-        console.log("Abriendo modal para EDITAR sitio:", sitio.id);
     };
 
-    const handleDelete = async (sitioId) => { // Convertida a async para await
+     const handleCloseModal = () => {
+        setIsModalOpen(false);
+        // setEditingSitio(null); // El modal ahora se resetea internamente con destroyOnClose
+    };
+
+
+    // --- Función de Eliminar (se queda aquí, podría moverse a un servicio) ---
+    const handleDelete = async (sitioId) => {
         console.log("Intentando eliminar sitio ID:", sitioId);
         try {
             const siteDocRef = doc(db, 'sites', sitioId);
             await deleteDoc(siteDocRef);
-            console.log("Sitio eliminado con éxito:", sitioId);
-            // Opcional: Mostrar notificación de éxito con AntD Message/Notification
-            // message.success('Sitio eliminado correctamente');
+            message.success('Sitio eliminado correctamente'); // Usa message de AntD
         } catch (error) {
             console.error("Error al eliminar sitio:", error);
-            setError("Error al eliminar el sitio.");
-             // Opcional: Mostrar notificación de error
-             // message.error('Error al eliminar el sitio');
+            message.error('Error al eliminar el sitio'); // Usa message de AntD
+             // Podríamos querer establecer el estado de error de la página también
+             // setError("Error al eliminar el sitio.");
         }
     };
 
-    // --- Definición de Columnas para AntD Table ---
-    const columns = [
-        {
-            title: 'Título', // Texto del encabezado
-            dataIndex: 'title', // Campo del objeto de datos a mostrar
-            key: 'title', // Clave única para la columna
-            sorter: (a, b) => a.title.localeCompare(b.title), // Habilita ordenación
-        },
-        {
-            title: 'Categoría',
-            dataIndex: 'category',
-            key: 'category',
-            sorter: (a, b) => (a.category || '').localeCompare(b.category || ''),
-        },
-        {
-            title: 'Ubicación',
-            dataIndex: 'location',
-            key: 'location',
-        },
-        {
-            title: 'Premium',
-            dataIndex: 'isPremium',
-            key: 'isPremium',
-            align: 'center', // Centrar contenido
-            render: (isPremium) => ( // Función para renderizado personalizado
-                <Tag color={isPremium ? 'gold' : 'default'}> {/* Usa AntD Tag */}
-                    {isPremium ? 'Sí' : 'No'}
-                </Tag>
-            ),
-            filters: [ // Habilita filtrado
-              { text: 'Sí', value: true },
-              { text: 'No', value: false },
-            ],
-            onFilter: (value, record) => record.isPremium === value,
-        },
-        {
-            title: 'Acciones',
-            key: 'actions',
-            align: 'center',
-            render: (_, record) => ( // El primer argumento es el valor, el segundo es todo el registro (objeto sitio)
-                <Space size="small"> {/* AntD Space para espaciar botones */}
-                    <Button
-                        type="link" // Estilo de botón como enlace
-                        icon={<BsPencilSquare />}
-                        onClick={() => handleEdit(record)}
-                        aria-label="Editar" // Para accesibilidad
-                    />
-                    {/* Popconfirm para confirmación antes de borrar */}
-                    <Popconfirm
-                        title="¿Eliminar el sitio?"
-                        description="¿Estás seguro de que quieres eliminar este sitio?"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Sí, eliminar"
-                        cancelText="Cancelar"
-                        okButtonProps={{ danger: true }} // Botón OK en rojo
-                    >
-                        <Button
-                            type="link"
-                            danger // Estilo peligro (rojo)
-                            icon={<BsTrash />}
-                            aria-label="Eliminar"
-                        />
-                    </Popconfirm>
-                </Space>
-            ),
-        },
-    ];
+    // --- Definición de Columnas para AntD Table (sin cambios) ---
+     const columns = [
+         {
+             title: 'Título', dataIndex: 'title', key: 'title',
+             sorter: (a, b) => a.title.localeCompare(b.title),
+         },
+         {
+             title: 'Categoría', dataIndex: 'category', key: 'category',
+             sorter: (a, b) => (a.category || '').localeCompare(b.category || ''),
+         },
+         { title: 'Ubicación', dataIndex: 'location', key: 'location', },
+         {
+             title: 'Premium', dataIndex: 'isPremium', key: 'isPremium', align: 'center',
+             render: (isPremium) => (<Tag color={isPremium ? 'gold' : 'default'}>{isPremium ? 'Sí' : 'No'}</Tag>),
+             filters: [{ text: 'Sí', value: true }, { text: 'No', value: false },],
+             onFilter: (value, record) => record.isPremium === value,
+         },
+         {
+             title: 'Acciones', key: 'actions', align: 'center',
+             render: (_, record) => (
+                 <Space size="small">
+                     <Button type="link" icon={<BsPencilSquare />} onClick={() => handleEdit(record)} aria-label="Editar"/>
+                     <Popconfirm
+                         title="¿Eliminar el sitio?"
+                         description="¿Estás seguro?"
+                         onConfirm={() => handleDelete(record.id)}
+                         okText="Sí" cancelText="No" okButtonProps={{ danger: true }} >
+                         <Button type="link" danger icon={<BsTrash />} aria-label="Eliminar"/>
+                     </Popconfirm>
+                 </Space>
+             ),
+         },
+     ];
 
     // --- Renderizado del Componente ---
     return (
         <div className="page-container">
             <div className="page-header">
                 <h2>Gestión de Sitios</h2>
-                {/* Botón Añadir con estilo AntD */}
                 <Button type="primary" icon={<BsPlusLg />} onClick={handleOpenAddModal}>
                     Añadir Sitio
                 </Button>
             </div>
 
             <div className="page-content">
-                {error && <p style={{ color: 'red' }}>{error}</p>} {/* Muestra error si existe */}
+                {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>} {/* Muestra error */}
 
-                {/* Tabla de Ant Design */}
                 <Table
-                    columns={columns} // Define las columnas
-                    dataSource={sitiosList} // Pasa la lista de sitios
-                    loading={isLoading} // Muestra indicador de carga
-                    rowKey="id" // Indica que 'id' es la clave única de cada fila
-                    size="middle" // Tamaño de la tabla (small, middle, large)
-                    style={{ marginTop: '20px' }} // Margen superior
-                    // Puedes añadir más props como pagination, scroll, etc.
-                     pagination={{ pageSize: 10 }} // Ejemplo de paginación
+                    columns={columns}
+                    dataSource={sitiosList}
+                    loading={isLoading}
+                    rowKey="id"
+                    size="middle"
+                    style={{ marginTop: '20px' }}
+                    pagination={{ pageSize: 10 }}
                 />
 
-                 {/* Placeholder para el Modal (usar AntD Modal después) */}
-                 {isModalOpen && (
-                     <div className="modal-placeholder">
-                         <h3>{editingSitio ? 'Editar Sitio' : 'Añadir Nuevo Sitio'}</h3>
-                         <p>Aquí irá el formulario AntD...</p>
-                         {editingSitio && <pre>{JSON.stringify(editingSitio, null, 2)}</pre>}
-                         <Button onClick={handleCloseModal} style={{marginTop: '15px'}}>Cerrar Placeholder</Button>
-                     </div>
-                 )}
+                {/* Renderiza el componente Modal, pasando los props necesarios */}
+                <AddEditSitioModal
+                    open={isModalOpen}
+                    onClose={handleCloseModal}
+                    sitio={editingSitio} // Pasa el sitio actual para editar (o null si es nuevo)
+                />
             </div>
         </div>
     );
