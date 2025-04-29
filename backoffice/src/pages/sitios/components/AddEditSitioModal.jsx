@@ -1,28 +1,29 @@
-// src/components/AddEditSitioModal.jsx (Versión CORREGIDA para galleryImages)
+// src/components/AddEditSitioModal.jsx (Versión CON DEBUGGING ADICIONAL para la categoría)
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Switch, Select, InputNumber, Button, message, Space, Upload, Alert } from 'antd'; // Añadir Alert
+import { Modal, Form, Input, Switch, Select, InputNumber, Button, message, Space, Upload, Alert } from 'antd';
 import { UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 // Asegúrate que la ruta a firebase es correcta desde ESTE archivo (components)
 import { db } from '../../../firebase'; // Ajusta esta ruta si es necesario
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
-// import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, doc, updateDoc, onSnapshot, query, orderBy, documentId } from 'firebase/firestore'; // Importar onSnapshot, query, orderBy, documentId
 
 const { TextArea } = Input;
-// const storage = getStorage();
+// const storage = getStorage(); // Comentado ya que no se usa en este snippet
 
-const categoryOptions = [
-    { value: 'Bares', label: 'Bares' },
-    { value: 'Restaurantes', label: 'Restaurantes' },
-    { value: 'Cafes', label: 'Cafés' },
-    { value: 'Tiendas', label: 'Tiendas' },
-    // Agrega más categorías según necesites
-];
+// Eliminar el array local de categorías
+// const categoryOptions = [
+//     { value: 'Bares', label: 'Bares' },
+//     { value: 'Restaurantes', label: 'Restaurantes' },
+//     { value: 'Cafes', label: 'Cafés' },
+//     { value: 'Tiendas', label: 'Tiendas' },
+//     // Agrega más categorías según necesites
+// ];
 
 function AddEditSitioModal({ open, onClose, sitio }) {
     const [form] = Form.useForm();
     const [isPremium, setIsPremium] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null); // Estado para errores del submit
+    const [fetchedCategories, setFetchedCategories] = useState([]); // NUEVO estado para categorías fetched
 
     // Observa el valor del campo 'isPremium' en el formulario
     const premiumValue = Form.useWatch('isPremium', form);
@@ -33,6 +34,33 @@ function AddEditSitioModal({ open, onClose, sitio }) {
             setIsPremium(premiumValue);
         }
     }, [premiumValue]);
+
+    // NUEVO Efecto para cargar las categorías desde Firestore
+    useEffect(() => {
+        if (open) { // Solo cargar cuando el modal está abierto
+            const categoriesCollectionRef = collection(db, 'site_categories');
+             // Ordenar por el ID del documento (que es el nombre de la categoría)
+            const q = query(categoriesCollectionRef, orderBy(documentId(), 'asc'));
+
+            const unsubscribe = onSnapshot(q,
+                (querySnapshot) => {
+                    const categoriesData = querySnapshot.docs.map(docSnap => ({
+                        value: docSnap.id, // Usar el ID del documento como valor
+                        label: docSnap.data().name || docSnap.id, // Usar el campo 'name' si existe, si no el ID
+                    }));
+                    setFetchedCategories(categoriesData);
+                },
+                (err) => {
+                    console.error("Error al obtener site_categories:", err);
+                    // Opcional: mostrar un mensaje de error al usuario si falla la carga de categorías
+                    message.error("Error al cargar las categorías. Intenta de nuevo.");
+                }
+            );
+
+            // Limpiar la suscripción al desmontar o cerrar el modal
+            return () => unsubscribe();
+        }
+    }, [open]); // Dependencia: se ejecuta cuando el modal se abre/cierra
 
     // Efecto para inicializar el formulario cuando se abre el modal o cambia el 'sitio'
     useEffect(() => {
@@ -53,6 +81,8 @@ function AddEditSitioModal({ open, onClose, sitio }) {
                         ? sitio.galleryImages.join('\n') // Une las URLs con saltos de línea para el TextArea
                         : '', // Si no es array (o no existe), string vacío
                     actions: sitio.actions ?? {},
+                     // Asegura que la categoría exista en las opciones fetched o sea un valor válido
+                    category: sitio.category || undefined, // Usar undefined si no hay categoría para que el placeholder funcione
                 };
                 form.setFieldsValue(initialData);
                 setIsPremium(sitio.isPremium ?? false);
@@ -68,6 +98,7 @@ function AddEditSitioModal({ open, onClose, sitio }) {
                     promos: [],
                     events: [],
                     actions: {},
+                    category: undefined, // Inicializar categoría como undefined para el placeholder
                 });
                 setIsPremium(false);
             }
@@ -84,8 +115,8 @@ function AddEditSitioModal({ open, onClose, sitio }) {
             ...values, // Incluye todos los valores del formulario
             isPremium: values.isPremium ?? false, // Asegura valor booleano
             likes: values.likes ?? 0, // Asegura valor numérico
+            category: values.category || '', // Asegura que se guarde un string vacío si no se seleccionó categoría
 
-            // *** CORRECCIÓN AQUÍ ***
             // Convierte el string del TextArea de galleryImages de nuevo a un array
             galleryImages: typeof values.galleryImages === 'string'
                 ? values.galleryImages
@@ -100,6 +131,10 @@ function AddEditSitioModal({ open, onClose, sitio }) {
             events: (values.events ?? []).filter(event => event && event.title), // Asegura que al menos el título exista
             actions: values.actions ?? {}, // Asegura objeto vacío como fallback
         };
+
+        // *** DEBUGGING LOG ***
+        console.log("Datos a guardar en Firestore:", siteData);
+        // *********************
 
         // --- Lógica de subida de imágenes (si la implementas) iría aquí ---
         // Ejemplo: si usaras un componente Upload de AntD, aquí procesarías los archivos
@@ -141,7 +176,7 @@ function AddEditSitioModal({ open, onClose, sitio }) {
             // Útil para asegurar limpieza de estado entre modo "Añadir" y "Editar".
             // Alternativa a usar `destroyOnClose` en Modal o lógica más compleja en useEffect.
             key={sitio ? `edit-${sitio.id}` : 'add-new'}
-            // destroyOnClose // Otra opción para limpiar el estado del form al cerrar (puede tener ligera penalización de rendimiento)
+            destroyOnClose={true} // Usamos destroyOnClose para asegurar que se recarguen las categorías
         >
             <Form
                 form={form} // Instancia del formulario AntD
@@ -162,8 +197,17 @@ function AddEditSitioModal({ open, onClose, sitio }) {
                 <Form.Item name="subtitle" label="Subtítulo">
                     <Input />
                 </Form.Item>
+                {/* Campo de Categoría usando las categorías fetched */}
                 <Form.Item name="category" label="Categoría" rules={[{ required: true, message: 'Por favor selecciona una categoría' }]}>
-                    <Select options={categoryOptions} placeholder="Selecciona categoría" />
+                    <Select
+                        options={fetchedCategories}
+                        placeholder="Selecciona categoría"
+                        loading={!fetchedCategories.length && open}
+                        onChange={(value) => { // Añadir console.log en onChange
+                            console.log("Categoría seleccionada:", value);
+                            form.setFieldsValue({ category: value }); // Asegurar que el valor se establezca en el form
+                        }}
+                    />
                 </Form.Item>
                 <Form.Item name="location" label="Ubicación (Zona/Barrio)">
                     <Input />
@@ -263,17 +307,21 @@ function AddEditSitioModal({ open, onClose, sitio }) {
                                         {fields.map(({ key, name, ...restField }) => (
                                             <Space key={key} style={{ display: 'flex', marginBottom: 8, border: '1px dashed #ccc', padding: '10px', borderRadius: '4px' }} align="start">
                                                 <div style={{ display: 'flex', flexDirection: 'column', width: '150px', gap: '8px' }}>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'icon']} label="Icono" rules={[{ required: true, message: 'Icono requerido' }]}>
                                                         <Input placeholder="ej: local_offer" />
                                                     </Form.Item>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'validity']} label="Validez">
                                                         <Input placeholder="ej: Jueves" />
                                                     </Form.Item>
                                                 </div>
                                                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: '8px' }}>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'title']} label="Título Promo" rules={[{ required: true, message: 'Título requerido' }]}>
                                                         <Input />
                                                     </Form.Item>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'description']} label="Descripción Promo" rules={[{ required: true, message: 'Descripción requerida' }]}>
                                                         <TextArea rows={2} />
                                                     </Form.Item>
@@ -300,17 +348,21 @@ function AddEditSitioModal({ open, onClose, sitio }) {
                                         {fields.map(({ key, name, ...restField }) => (
                                             <Space key={key} style={{ display: 'flex', marginBottom: 8, border: '1px dashed #ccc', padding: '10px', borderRadius: '4px' }} align="start">
                                                 <div style={{ display: 'flex', flexDirection: 'column', width: '150px', gap: '8px' }}>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'icon']} label="Icono" rules={[{ required: true, message: 'Icono requerido' }]}>
                                                         <Input placeholder="ej: event"/>
                                                     </Form.Item>
-                                                     <Form.Item {...restField} name={[name, 'validity']} label="Validez/Fecha">
+                                                    {/* CORRECCIÓN AQUÍ */}
+                                                    <Form.Item {...restField} name={[name, 'validity']} label="Validez/Fecha">
                                                         <Input placeholder="ej: Viernes"/>
                                                     </Form.Item>
                                                 </div>
                                                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: '8px' }}>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'title']} label="Título Evento" rules={[{ required: true, message: 'Título requerido' }]}>
                                                         <Input />
                                                     </Form.Item>
+                                                    {/* CORRECCIÓN AQUÍ */}
                                                     <Form.Item {...restField} name={[name, 'description']} label="Descripción Evento" rules={[{ required: true, message: 'Descripción requerida' }]}>
                                                         <TextArea rows={2} />
                                                     </Form.Item>
