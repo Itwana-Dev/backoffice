@@ -1,0 +1,30 @@
+/* src/pages/UsuariosPage.css */
+
+.page-container {
+    /* Estilos si necesitas padding extra, etc. */
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee; /* Borde claro para fondo blanco */
+}
+
+.page-header h2 {
+    margin: 0;
+    color: var(--text-color-headings); /* Usar variable global para títulos */
+    font-weight: 600; /* Un poco más de peso */
+}
+
+/* Puedes añadir estilos específicos para la tabla si lo necesitas,
+   pero Ant Design ya proporciona muchos estilos por defecto. */
+/* Ejemplo:
+.ant-table {
+    // Tus estilos personalizados para la tabla
+}
+*/
+
+/* Si tienes otros elementos específicos en esta página, añade sus estilos aquí */

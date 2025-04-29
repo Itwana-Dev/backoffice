@@ -8,7 +8,7 @@ import DashboardPage from './pages/DashboardPage';
 
 // --- Importa las NUEVAS páginas ---
 // (Asegúrate de que estos archivos existan en src/pages)
-import UsuariosPage from './pages/UsuariosPage';
+import UsuariosPage from './pages/usuarios/UsuariosPage';
 import SitiosPage from './pages/sitios/SitiosPage';
 import ServiciosPage from './pages/ServiciosPage';
 import EventosPage from './pages/EventosPage';
