@@ -1,17 +1,18 @@
-// src/pages/SitiosPage.jsx (CON FILTROS AÑADIDOS, SIN ELIMINAR NADA)
-import React, { useState, useEffect, useRef, useMemo } from 'react'; // <--- Añadido useRef y useMemo
+// src/pages/SitiosPage.jsx (COMPLETO CON FILTROS Y GESTIÓN DE CATEGORÍAS AÑADIDA)
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { collection, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase'; // Ajusta la ruta si es necesario
 
 // Importa componentes de Ant Design
-import { Table, Button, Space, Tag, Popconfirm, message, Tooltip, Input } from 'antd'; // <--- Añadido Input
-import { BsPlusLg, BsPencilSquare, BsTrash, BsCardList } from 'react-icons/bs';
-import { SearchOutlined } from '@ant-design/icons'; // <--- Añadido SearchOutlined
+import { Table, Button, Space, Tag, Popconfirm, message, Tooltip, Input } from 'antd';
+import { BsPlusLg, BsPencilSquare, BsTrash, BsCardList, BsGrid3X3Gap } from 'react-icons/bs'; // <-- Icono añadido
+import { SearchOutlined } from '@ant-design/icons';
 
 
 // Importa los Modales existentes y NUEVOS
 import AddEditSitioModal from './components/AddEditSitioModal'; // Ajusta la ruta
-import ManageMenuItemsModal from './components/ManageMenuItemsModal'; // NUEVO MODAL (crear este archivo)
+import ManageMenuItemsModal from './components/ManageMenuItemsModal';
+import ManageCategoriesModal from './components/ManageCategoriesModal'; // <-- Importado modal de categorías
 
 import './SitiosPage.css';
 
@@ -25,11 +26,14 @@ function SitiosPage() {
     const [isMenuItemsModalOpen, setIsMenuItemsModalOpen] = useState(false);
     const [selectedSitioForMenu, setSelectedSitioForMenu] = useState(null);
 
-    // --- NUEVOS Estados y Ref para filtros de búsqueda ---
-    const [, setSearchText] = useState('');
+    // --- Estados y Ref para filtros de búsqueda (sin cambios)---
+    const [, setSearchText] = useState(''); // Volvemos a necesitar el estado para el resaltado opcional
     const [, setSearchedColumn] = useState('');
-    const searchInput = useRef(null); // Ref para acceder al input de búsqueda
-    // --- FIN NUEVOS Estados y Ref ---
+    const searchInput = useRef(null);
+
+    // --- NUEVO: Estado para el modal de Categorías ---
+    const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
+    // --- FIN NUEVO Estado ---
 
     // --- Carga de Datos (sin cambios) ---
     useEffect(() => {
@@ -69,7 +73,7 @@ function SitiosPage() {
     };
 
 
-    // --- NUEVAS Funciones para controlar el Modal de GESTIONAR MENU ITEMS (sin cambios)---
+    // --- Funciones para controlar el Modal de GESTIONAR MENU ITEMS (sin cambios)---
     const handleOpenMenuItemsModal = (sitio) => {
         setSelectedSitioForMenu(sitio);
         setIsMenuItemsModalOpen(true);
@@ -79,6 +83,16 @@ function SitiosPage() {
         setIsMenuItemsModalOpen(false);
         setSelectedSitioForMenu(null);
     };
+
+    // --- NUEVO: Funciones para controlar el Modal de CATEGORÍAS ---
+    const handleOpenCategoriesModal = () => {
+        setIsCategoriesModalOpen(true);
+    };
+
+    const handleCloseCategoriesModal = () => {
+        setIsCategoriesModalOpen(false);
+    };
+    // --- FIN NUEVAS Funciones ---
 
 
     // --- Función de Eliminar Sitio (sin cambios) ---
@@ -94,21 +108,21 @@ function SitiosPage() {
         }
     };
 
-    // --- NUEVO: Funciones para manejar el filtro de búsqueda ---
+    // --- Funciones para manejar el filtro de búsqueda (sin cambios) ---
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm(); // Confirma la operación de filtrado
-        setSearchText(selectedKeys[0] || ''); // Guarda el texto buscado (o vacío si no hay)
-        setSearchedColumn(dataIndex); // Guarda la columna donde se buscó
+        confirm();
+        setSearchText(selectedKeys[0] || '');
+        setSearchedColumn(dataIndex);
     };
 
-    const handleReset = (clearFilters, confirm) => { // Añadido confirm para reaplicar tabla sin filtro
-        clearFilters(); // Limpia los filtros aplicados en la columna
-        setSearchText(''); // Limpia el estado del texto buscado
-        setSearchedColumn(''); // Limpia la columna buscada
-        confirm(); // Confirma para que la tabla se actualice sin el filtro
+    const handleReset = (clearFilters, confirm) => {
+        clearFilters();
+        setSearchText('');
+        setSearchedColumn(''); // Limpiar columna también
+        confirm();
     };
 
-    // --- NUEVO: Función reutilizable para propiedades de filtro de búsqueda ---
+    // --- Función reutilizable para propiedades de filtro de búsqueda (sin cambios) ---
     const getColumnSearchProps = (dataIndex, columnTitle) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
@@ -131,7 +145,6 @@ function SitiosPage() {
                         Buscar
                     </Button>
                     <Button
-                        // Pasamos confirm a handleReset para actualizar la tabla
                         onClick={() => clearFilters && handleReset(clearFilters, confirm)}
                         size="small"
                         style={{ width: 90 }}
@@ -141,10 +154,7 @@ function SitiosPage() {
                     <Button
                         type="link"
                         size="small"
-                        onClick={() => {
-                            // Solo cierra el dropdown, no confirma filtro
-                            close();
-                        }}
+                        onClick={() => { close(); }}
                     >
                         Cerrar
                     </Button>
@@ -157,24 +167,16 @@ function SitiosPage() {
         onFilter: (value, record) =>
             record[dataIndex]
                 ? record[dataIndex].toString().toLowerCase().includes((value || '').toLowerCase())
-                : false, // Si no hay valor en el registro, no coincide
+                : false,
         onFilterDropdownOpenChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // Puedes descomentar 'render' si instalas 'react-highlight-words' para resaltar
-        // render: (text) =>
-        //     searchedColumn === dataIndex ? (
-        //         /* Componente Highlighter aquí */
-        //         text
-        //     ) : (
-        //         text
-        //     ),
+        // render: (text) => ( ... ) // Opcional para resaltar
     });
-    // --- FIN NUEVAS funciones de búsqueda ---
 
-    // --- NUEVO: Generar filtros de categoría dinámicamente ---
+    // --- Generar filtros de categoría dinámicamente (sin cambios) ---
     const categoryFilters = useMemo(() => {
         const categories = new Set(sitiosList.map(sitio => sitio.category).filter(Boolean));
         return Array.from(categories).sort().map(category => ({
@@ -182,46 +184,31 @@ function SitiosPage() {
             value: category,
         }));
     }, [sitiosList]);
-    // --- FIN NUEVO cálculo de filtros ---
 
-    // --- Definición de Columnas para AntD Table (AÑADIDOS FILTROS) ---
+    // --- Definición de Columnas para AntD Table (sin cambios respecto a la versión con filtros) ---
      const columns = [
          {
-             title: 'Título',
-             dataIndex: 'title',
-             key: 'title',
-             // Se mantiene el sorter existente
+             title: 'Título', dataIndex: 'title', key: 'title',
              sorter: (a, b) => a.title.localeCompare(b.title),
-             // Se AÑADEN las propiedades de filtro
              ...getColumnSearchProps('title', 'Título'),
          },
          {
-             title: 'Categoría',
-             dataIndex: 'category',
-             key: 'category',
-             // Se mantiene el sorter existente
+             title: 'Categoría', dataIndex: 'category', key: 'category',
              sorter: (a, b) => (a.category || '').localeCompare(b.category || ''),
-             // Se AÑADEN las propiedades de filtro
              filters: categoryFilters,
              onFilter: (value, record) => record.category === value,
          },
          {
-             title: 'Ubicación',
-             dataIndex: 'location',
-             key: 'location',
-             // Se AÑADEN las propiedades de filtro
-              ...getColumnSearchProps('location', 'Ubicación'),
-              // Se mantiene sin sorter (como estaba antes)
+             title: 'Ubicación', dataIndex: 'location', key: 'location',
+             ...getColumnSearchProps('location', 'Ubicación'),
          },
          {
-             // Columna Premium (sin cambios, ya tenía filtro)
              title: 'Premium', dataIndex: 'isPremium', key: 'isPremium', align: 'center',
              render: (isPremium) => (<Tag color={isPremium ? 'gold' : 'default'}>{isPremium ? 'Sí' : 'No'}</Tag>),
              filters: [{ text: 'Sí', value: true }, { text: 'No', value: false },],
              onFilter: (value, record) => record.isPremium === value,
          },
          {
-             // Columna Acciones (sin cambios)
              title: 'Acciones', key: 'actions', align: 'center', width: 150,
              render: (_, record) => (
                  <Space size="small">
@@ -246,21 +233,29 @@ function SitiosPage() {
          },
      ];
 
-    // --- Renderizado del Componente (SIN CAMBIOS) ---
+    // --- Renderizado del Componente (CON BOTÓN Y MODAL DE CATEGORÍAS) ---
     return (
         <div className="page-container">
+             {/* --- Cabecera Modificada --- */}
             <div className="page-header">
                 <h2>Gestión de Sitios</h2>
-                <Button type="primary" icon={<BsPlusLg />} onClick={handleOpenAddSitioModal}>
-                    Añadir Sitio
-                </Button>
+                <Space> {/* Agrupamos los botones */}
+                    {/* Botón Añadir Sitio (existente) */}
+                    <Button type="primary" icon={<BsPlusLg />} onClick={handleOpenAddSitioModal}>
+                        Añadir Sitio
+                    </Button>
+                    {/* NUEVO Botón Categorías */}
+                    <Button icon={<BsGrid3X3Gap />} onClick={handleOpenCategoriesModal}>
+                        Categorías
+                    </Button>
+                </Space>
             </div>
 
             <div className="page-content">
                 {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>}
 
                 <Table
-                    columns={columns} // Usa la nueva definición de columnas con filtros
+                    columns={columns}
                     dataSource={sitiosList}
                     loading={isLoading}
                     rowKey="id"
@@ -269,14 +264,16 @@ function SitiosPage() {
                     pagination={{ pageSize: 10 }}
                 />
 
-                {/* Modal para AÑADIR/EDITAR el SITIO (sin cambios funcionales) */}
+                 {/* --- Modales --- */}
+
+                {/* Modal Añadir/Editar Sitio */}
                 <AddEditSitioModal
                     open={isAddEditModalOpen}
                     onClose={handleCloseAddEditSitioModal}
                     sitio={editingSitio}
                 />
 
-                {/* NUEVO MODAL para GESTIONAR MENU ITEMS (sin cambios funcionales)*/}
+                {/* Modal Gestionar Menu Items */}
                 {selectedSitioForMenu && (
                     <ManageMenuItemsModal
                         open={isMenuItemsModalOpen}
@@ -284,6 +281,14 @@ function SitiosPage() {
                         sitio={selectedSitioForMenu}
                     />
                 )}
+
+                {/* NUEVO: Modal Gestionar Categorías */}
+                {/* Se renderiza siempre pero se controla visibilidad con 'open' */}
+                <ManageCategoriesModal
+                    open={isCategoriesModalOpen}
+                    onClose={handleCloseCategoriesModal}
+                />
+
             </div>
         </div>
     );
