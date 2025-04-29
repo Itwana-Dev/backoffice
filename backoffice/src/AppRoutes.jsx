@@ -11,7 +11,7 @@ import DashboardPage from './pages/DashboardPage';
 import UsuariosPage from './pages/usuarios/UsuariosPage';
 import SitiosPage from './pages/sitios/SitiosPage';
 import ServiciosPage from './pages/ServiciosPage';
-import EventosPage from './pages/EventosPage';
+import EventosPage from './pages/eventos/EventosPage';
 import AppConfigPage from './pages/AppConfigPage';
 
 // Ya no necesitamos PlaceholderPage
