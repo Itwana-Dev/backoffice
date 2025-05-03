@@ -61,6 +61,7 @@ function ServiciosPage() {
         setIsAddEditModalOpen(true);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleEditProfesional = (profesional) => {
         setEditingProfesional(profesional); // Establecer el profesional a editar
         setIsAddEditModalOpen(true);
@@ -82,6 +83,7 @@ function ServiciosPage() {
 
 
     // --- Función de Eliminar Profesional ---
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleDeleteProfesional = async (profesionalId) => {
         console.log("Intentando eliminar profesional ID:", profesionalId);
         try {
@@ -110,6 +112,7 @@ function ServiciosPage() {
     };
 
     // --- Función reutilizable para propiedades de filtro de búsqueda ---
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const getColumnSearchProps = (dataIndex, columnTitle) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
