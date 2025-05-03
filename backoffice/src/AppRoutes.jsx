@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 
 // Importa las páginas existentes
 import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
 
 // --- Importa las NUEVAS páginas ---
 // (Asegúrate de que estos archivos existan en src/pages)
