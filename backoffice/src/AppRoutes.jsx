@@ -10,7 +10,7 @@ import DashboardPage from './pages/DashboardPage';
 // (Asegúrate de que estos archivos existan en src/pages)
 import UsuariosPage from './pages/usuarios/UsuariosPage';
 import SitiosPage from './pages/sitios/SitiosPage';
-import ServiciosPage from './pages/ServiciosPage';
+import ServiciosPage from './pages/servicios/ServiciosPage';
 import EventosPage from './pages/eventos/EventosPage';
 import AppConfigPage from './pages/AppConfigPage';
 
