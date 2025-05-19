@@ -18,7 +18,7 @@ import './OrdersPage.css'; // Asegúrate de tener este archivo CSS
 const { Text } = Typography;
 import { message } from 'antd';
 // Definir el flujo de estados de la orden y sus colores
-const ORDER_STATUS_FLOW = ['Pendiente', 'Aprobadoo', 'Alistado', 'En camino', 'Entregado'];
+const ORDER_STATUS_FLOW = ['Pendiente', 'Aprobado', 'Alistado mal cambiar', 'En camino', 'Entregado'];
 const STATUS_COLORS = {
     'Pendiente': 'gold',
     'Aprobado': 'blue',
