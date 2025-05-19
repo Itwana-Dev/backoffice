@@ -1,4 +1,4 @@
-// src/components/Sidebar.jsx (Con Iconos y nueva estructura)
+// src/components/Sidebar.jsx (Con Iconos y todos los enlaces)
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 // Importa los iconos que necesitas (ejemplo con Bootstrap Icons)
@@ -8,19 +8,23 @@ import {
     BsGeoAltFill,       // Icono para Sitios
     BsGearFill,         // Icono para Servicios (usado como ejemplo)
     BsCalendarEventFill,// Icono para Eventos
+    BsCartFill,         // Icono para Shop
+    BsReceipt,          // Icono para Ordenes de Compra (Recibo/Factura)
     BsWrenchAdjustableCircleFill, // Icono para AppConfig
     BsBoxArrowLeft       // Icono para Cerrar Sesión
-} from 'react-icons/bs';
+} from 'react-icons/bs'; // Asegúrate de tener react-icons instalado
 import './Sidebar.css'; // Usaremos el CSS rediseñado
 
 function Sidebar({ handleLogout }) {
-    // Define los elementos del menú como un array para facilitar la gestión (opcional)
+    // Define los elementos del menú como un array para facilitar la gestión
     const menuItems = [
         { path: "/", label: "Dashboard", icon: <BsGrid1X2Fill /> },
         { path: "/usuarios", label: "Usuarios", icon: <BsPeopleFill /> },
         { path: "/sitios", label: "Sitios", icon: <BsGeoAltFill /> },
         { path: "/servicios", label: "Servicios", icon: <BsGearFill /> },
         { path: "/eventos", label: "Eventos", icon: <BsCalendarEventFill /> },
+        { path: "/shop", label: "Shop", icon: <BsCartFill /> },
+        { path: "/orders", label: "Ordenes de compra", icon: <BsReceipt /> },
         { path: "/appconfig", label: "AppConfig", icon: <BsWrenchAdjustableCircleFill /> },
     ];
 
@@ -58,3 +62,4 @@ function Sidebar({ handleLogout }) {
 }
 
 export default Sidebar;
+

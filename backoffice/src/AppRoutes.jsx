@@ -1,4 +1,4 @@
-// src/AppRoutes.jsx (Actualizado con las páginas reales)
+// src/AppRoutes.jsx (Actualizado con la ruta de Ordenes de Compra)
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -12,7 +12,10 @@ import UsuariosPage from './pages/usuarios/UsuariosPage';
 import SitiosPage from './pages/sitios/SitiosPage';
 import ServiciosPage from './pages/servicios/ServiciosPage';
 import EventosPage from './pages/eventos/EventosPage';
-import AppConfigPage from './pages/AppConfigPage';
+import ShopPage from './pages/shop/ShopPage'; // Página de Shop
+// Importa la nueva página de Ordenes de Compra
+import OrdersPage from './pages/ordenes/OrdersPage'; // Asegúrate que la ruta sea correcta
+import AppConfigPage from './pages/appConfig/AppConfigPage';
 
 // Ya no necesitamos PlaceholderPage
 
@@ -29,6 +32,9 @@ function AppRoutes({ user }) {
                     <Route path="/sitios" element={<SitiosPage />} />
                     <Route path="/servicios" element={<ServiciosPage />} />
                     <Route path="/eventos" element={<EventosPage />} />
+                    <Route path="/shop" element={<ShopPage />} />
+                    {/* Ruta para la nueva página de Ordenes de Compra */}
+                    <Route path="/orders" element={<OrdersPage />} /> {/* Añadida la nueva ruta */}
                     <Route path="/appconfig" element={<AppConfigPage />} />
 
                     {/* Ruta por defecto o página 404 (si ninguna ruta coincide dentro del backoffice) */}
@@ -49,3 +55,4 @@ function AppRoutes({ user }) {
 }
 
 export default AppRoutes;
+
